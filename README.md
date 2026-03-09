@@ -43,49 +43,59 @@ AWS RDS MySQL Database
 
 #### Create EC2 Instance
 
-Launch Ubuntu EC2 instance and connect via SSH.
+Launch Ubuntu EC2 instance and connect via SSH
 
+```bash
 ssh -i key.pem ubuntu@EC2_PUBLIC_IP
-Install Required Packages
+# Install Required Packages
 sudo apt update
 sudo apt install nodejs npm -y
 sudo apt install nginx -y
 sudo apt install mysql-client -y
+```
+
 Database Setup (AWS RDS)
 
 Connect to the database:
+```bash
 
 mysql -h RDS_ENDPOINT -u admin -p
+```
 
 #### Create database:
 
+```bash 
 CREATE DATABASE bookstore;
 
-Verify:
+#Verify:
 
 SHOW DATABASES;
-Import Database Schema
+```
+
+#### Import Database Schema
 
 Navigate to SQL files:
-
+```bash
 cd ~/theepicbook/db
-
-#### Import schema:
-
+```
+#### Import schema
+```bash
 mysql -h RDS_ENDPOINT -u admin -p bookstore < BuyTheBook_Schema.sql
 
-Import seed data:
+#Import seed data:
 
 mysql -h RDS_ENDPOINT -u admin -p bookstore < author_seed.sql
 mysql -h RDS_ENDPOINT -u admin -p bookstore < books_seed.sql
+```
 
 #### Verify tables:
-
+```bash
 mysql -h RDS_ENDPOINT -u admin -p -e "USE bookstore; SHOW TABLES;"
-Deploy Backend Application
+```
+#### Deploy Backend Application
 
-#### Clone repository:
-
+Clone repository:
+```bash
 git clone https://github.com/pravinmishraaws/theepicbook.git
 cd theepicbook
 
@@ -97,19 +107,21 @@ npm install
 
 npm start
 
-Verify backend running:
+#Verify backend running:
 
 ss -tulpn | grep 3000
+```
 
 #### Test backend response:
-
+```bash
 curl http://localhost:3000
-Configure Nginx Reverse Proxy
+```
 
-#### Create Nginx configuration:
-
+#### Configure Nginx Reverse Proxy
+Create Nginx configuration:
+```bash
 sudo nano /etc/nginx/sites-available/epicbook
-
+```
 Configuration:
 
 server {
@@ -133,54 +145,56 @@ server {
 }
 
 #### Enable configuration:
-
+```bash
 sudo ln -s /etc/nginx/sites-available/epicbook /etc/nginx/sites-enabled/
-
+```
 Test configuration:
-
+```bash
 sudo nginx -t
 
-Restart Nginx:
+#Restart Nginx:
 
 sudo systemctl reload nginx
-
+```
 #### Setup PM2 (Production Process Manager)
-
-Install PM2:
+```bash
+#Install PM2:
 
 npm install -g pm2
 
-Start application:
+#Start application:
 
 pm2 start server.js
 
-View running processes:
+#View running processes:
 
 pm2 list
+```
 
 #### Enable auto restart on reboot:
-
+```bash
 pm2 startup
 pm2 save
+```
 
 ### Deployment Verification
 
 #### Check backend port:
-
+```bash
 ss -tulpn | grep 3000
-
+```
 #### Test website:
-
+```bash
 curl http://EC2_PUBLIC_IP
-
+```
 #### Test API endpoint:
-
+```bash
 curl http://EC2_PUBLIC_IP/api/
-
+```
 #### Check database connectivity:
-
+```bash
 mysql -h RDS_ENDPOINT -u admin -p -e "SELECT 1;"
-
+```
 ### Issues Faced and Solutions
 
 
@@ -252,5 +266,5 @@ The application is accessible through the public EC2 IP address via Nginx revers
 A huge thanks to my mentor Pravin Mishra. 
 
 # Author
-Nirmalya 
+Nirmalya Das    
 DevOps Enthusiast | Cloud & Infrastructure Projects
